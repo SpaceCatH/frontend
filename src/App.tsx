@@ -20,7 +20,7 @@ export default function App() {
   const [strategies, setStrategies] = useState<Strategy[]>([]);
   const [error, setError] = useState<string>("");
 
-  const API_BASE = "https://jh9fw8-8000.csb.app";
+  const API_BASE = "https://backend-950106760076.us-central1.run.app";
 
   async function fetchStrategy() {
     setLoading(true);
