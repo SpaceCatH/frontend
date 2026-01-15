@@ -10,8 +10,17 @@ interface Strategy {
   total_risk: number;
   total_profit: number;
   notes: string;
-  score: number; // NEW
-  is_recommended: boolean; // NEW
+  score: number;
+  is_recommended: boolean;
+}
+
+interface ScanCandidate {
+  ticker: string;
+  best_strategy: string;
+  best_score: number;
+  has_simple: boolean;
+  has_swing: boolean;
+  has_retest: boolean;
 }
 
 export default function App() {
@@ -20,31 +29,33 @@ export default function App() {
   const [type, setType] = useState<string>("all");
   const [loading, setLoading] = useState<boolean>(false);
   const [strategies, setStrategies] = useState<Strategy[]>([]);
+  const [scanResults, setScanResults] = useState<ScanCandidate[]>([]); // NEW
   const [error, setError] = useState<string>("");
 
   const API_BASE = "https://backend-950106760076.us-central1.run.app";
 
+  // -----------------------------
+  // Fetch single‑ticker strategy
+  // -----------------------------
   async function fetchStrategy() {
     setLoading(true);
     setError("");
     setStrategies([]);
+    setScanResults([]); // NEW: clear scan results
 
     try {
       const url = `${API_BASE}/strategy?ticker=${ticker}&dollars=${dollars}&type=${type}`;
       const res = await fetch(url);
 
-      // NEW: handle 404 gracefully
       if (!res.ok) {
         let errorMessage = "Unexpected server error. Please try again.";
 
         try {
           const errData = await res.json();
           if (res.status === 404 && errData?.detail) {
-            errorMessage = errData.detail; // backend's friendly message
+            errorMessage = errData.detail;
           }
-        } catch {
-          // ignore JSON parse errors
-        }
+        } catch {}
 
         throw new Error(errorMessage);
       }
@@ -53,6 +64,43 @@ export default function App() {
       if (!data.strategies) throw new Error("No strategies returned");
 
       setStrategies(data.strategies);
+    } catch (err: any) {
+      setError(err.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // -----------------------------
+  // NEW: Fetch S&P 100 scan
+  // -----------------------------
+  async function fetchScan() {
+    setLoading(true);
+    setError("");
+    setStrategies([]);
+    setScanResults([]);
+
+    try {
+      const url = `${API_BASE}/scan?dollars=${dollars || 10000}&type=${type}`;
+      const res = await fetch(url);
+
+      if (!res.ok) {
+        let errorMessage = "Unexpected server error. Please try again.";
+
+        try {
+          const errData = await res.json();
+          if (res.status === 404 && errData?.detail) {
+            errorMessage = errData.detail;
+          }
+        } catch {}
+
+        throw new Error(errorMessage);
+      }
+
+      const data = await res.json();
+      if (!data.candidates) throw new Error("No scan results returned");
+
+      setScanResults(data.candidates);
     } catch (err: any) {
       setError(err.message || "Something went wrong");
     } finally {
@@ -84,136 +132,10 @@ export default function App() {
             margin: "0 auto",
           }}
         >
-          Generate clean, beginner‑friendly trading setups using three proven
-          breakout methods.
+          Generate clean, beginner‑friendly trading setups — or scan the entire
+          S&P 100 for opportunities.
         </p>
       </header>
-
-      {/* STRATEGY OVERVIEW */}
-      <section style={{ marginBottom: "3rem" }}>
-        <h2
-          style={{
-            fontSize: "1.6rem",
-            fontWeight: 700,
-            marginBottom: "1.5rem",
-            textAlign: "center",
-          }}
-        >
-          Strategy Overview
-        </h2>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-            gap: "1.5rem",
-          }}
-        >
-          {/* Simple */}
-          <div
-            style={{
-              padding: "1.25rem",
-              borderRadius: "12px",
-              border: "1px solid #e5e7eb",
-              background: "#ffffff",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
-            }}
-          >
-            <h3
-              style={{
-                fontSize: "1.2rem",
-                fontWeight: 600,
-                marginBottom: "0.5rem",
-              }}
-            >
-              Simple Breakout
-            </h3>
-            <p style={{ lineHeight: 1.5, color: "#4b5563" }}>
-              A fast, momentum‑based entry triggered when price closes above the
-              8‑EMA after a pullback. Ideal for traders who want clean,
-              straightforward signals.
-            </p>
-          </div>
-
-          {/* Swing‑High */}
-          <div
-            style={{
-              padding: "1.25rem",
-              borderRadius: "12px",
-              border: "1px solid #e5e7eb",
-              background: "#ffffff",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
-            }}
-          >
-            <h3
-              style={{
-                fontSize: "1.2rem",
-                fontWeight: 600,
-                marginBottom: "0.5rem",
-              }}
-            >
-              Swing‑High Breakout
-            </h3>
-            <p style={{ lineHeight: 1.5, color: "#4b5563" }}>
-              A more selective setup that waits for price to break above a
-              recent swing high. Great for traders who want structural
-              confirmation before entering.
-            </p>
-          </div>
-
-          {/* Retest */}
-          <div
-            style={{
-              padding: "1.25rem",
-              borderRadius: "12px",
-              border: "1px solid #e5e7eb",
-              background: "#ffffff",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
-            }}
-          >
-            <h3
-              style={{
-                fontSize: "1.2rem",
-                fontWeight: 600,
-                marginBottom: "0.5rem",
-              }}
-            >
-              Retest Breakout
-            </h3>
-            <p style={{ lineHeight: 1.5, color: "#4b5563" }}>
-              A slower, more conservative approach that waits for a breakout and
-              retest before entering. Designed to avoid false breakouts and
-              reward patience.
-            </p>
-          </div>
-
-          {/* All */}
-          <div
-            style={{
-              padding: "1.25rem",
-              borderRadius: "12px",
-              border: "1px solid #e5e7eb",
-              background: "#ffffff",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
-            }}
-          >
-            <h3
-              style={{
-                fontSize: "1.2rem",
-                fontWeight: 600,
-                marginBottom: "0.5rem",
-              }}
-            >
-              All Strategies
-            </h3>
-            <p style={{ lineHeight: 1.5, color: "#4b5563" }}>
-              Runs all three strategies and shows every valid setup. Perfect for
-              comparing signals and choosing the best fit for current market
-              conditions.
-            </p>
-          </div>
-        </div>
-      </section>
 
       {/* FORM */}
       <section
@@ -250,6 +172,15 @@ export default function App() {
           <button onClick={fetchStrategy} disabled={loading}>
             {loading ? "Calculating..." : "Get Strategy"}
           </button>
+
+          {/* NEW: Scan button */}
+          <button
+            onClick={fetchScan}
+            disabled={loading}
+            style={{ background: "#2563eb", color: "white" }}
+          >
+            {loading ? "Scanning..." : "Scan S&P 100"}
+          </button>
         </div>
 
         {error && (
@@ -269,7 +200,40 @@ export default function App() {
         )}
       </section>
 
-      {/* RESULTS */}
+      {/* NEW: SCAN RESULTS */}
+      {scanResults.length > 0 && (
+        <section style={{ marginBottom: "3rem" }}>
+          <h2 style={{ marginBottom: "1rem" }}>S&P 100 Opportunities</h2>
+
+          {scanResults.map((c, i) => (
+            <div
+              key={i}
+              style={{
+                padding: "1rem",
+                borderRadius: "10px",
+                border: "1px solid #e5e7eb",
+                marginBottom: "1rem",
+                background: "#ffffff",
+              }}
+            >
+              <h3 style={{ marginBottom: "0.5rem" }}>{c.ticker}</h3>
+              <p>
+                <strong>Best Strategy:</strong> {c.best_strategy.toUpperCase()}
+              </p>
+              <p>
+                <strong>Score:</strong> {c.best_score}
+              </p>
+              <p style={{ marginTop: "0.5rem", color: "#4b5563" }}>
+                {c.has_simple && "• Simple "}
+                {c.has_swing && "• Swing "}
+                {c.has_retest && "• Retest "}
+              </p>
+            </div>
+          ))}
+        </section>
+      )}
+
+      {/* STRATEGY RESULTS */}
       <section className="results" style={{ marginBottom: "3rem" }}>
         {strategies.map((s, i) => {
           const highlight = s.is_recommended;
@@ -331,7 +295,6 @@ export default function App() {
                 <strong>Total Profit:</strong> ${s.total_profit}
               </p>
 
-              {/* Score */}
               <p style={{ marginTop: "0.5rem", color: "#374151" }}>
                 <strong>Score:</strong> {s.score.toFixed(2)}
               </p>
