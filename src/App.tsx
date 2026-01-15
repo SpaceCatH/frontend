@@ -8,6 +8,7 @@ interface Strategy {
   take_profit: number;
   shares: number;
   total_risk: number;
+  total_profit: number;
   notes: string;
   score: number; // NEW
   is_recommended: boolean; // NEW
@@ -311,6 +312,9 @@ export default function App() {
               </p>
               <p>
                 <strong>Total Risk:</strong> ${s.total_risk}
+              </p>
+              <p>
+                <strong>Total Profit:</strong> ${s.total_profit}
               </p>
 
               {/* Score */}
