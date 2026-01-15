@@ -176,136 +176,145 @@ export default function App() {
       </div>
 
       {/* RIGHT PANEL — STRATEGY DETAILS */}
-      <div style={{ padding: "2rem", overflowY: "auto" }}>
-        <h1 style={{ marginBottom: "1rem" }}>8‑EMA Breakout Strategy</h1>
+      <div
+        style={{
+          padding: "2rem",
+          overflowY: "auto",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <div style={{ width: "100%", maxWidth: "800px" }}>
+          <h1 style={{ marginBottom: "1rem" }}>8‑EMA Breakout Strategy</h1>
 
-        {/* FORM */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: "1rem",
-            marginBottom: "2rem",
-          }}
-        >
-          <input
-            type="text"
-            placeholder="Ticker"
-            value={ticker}
-            onChange={(e) => setTicker(e.target.value.toUpperCase())}
-          />
-
-          <input
-            type="number"
-            placeholder="Dollars"
-            value={dollars}
-            onChange={(e) => setDollars(e.target.value)}
-          />
-
-          <select value={type} onChange={(e) => setType(e.target.value)}>
-            <option value="simple">Simple</option>
-            <option value="retest">Retest</option>
-            <option value="swing">Swing</option>
-            <option value="all">All</option>
-          </select>
-
-          <button
-            onClick={() => fetchStrategy()}
-            disabled={loading}
-            style={{
-              gridColumn: "span 3",
-              padding: "0.75rem",
-              background: "#111827",
-              color: "white",
-              borderRadius: "8px",
-              fontWeight: 600,
-            }}
-          >
-            {loading ? "Loading..." : "Get Strategy"}
-          </button>
-        </div>
-
-        {error && (
+          {/* FORM */}
           <div
             style={{
-              marginBottom: "1rem",
-              padding: "1rem",
-              background: "#fee2e2",
-              color: "#b91c1c",
-              borderRadius: "8px",
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: "1rem",
+              marginBottom: "2rem",
             }}
           >
-            {error}
-          </div>
-        )}
+            <input
+              type="text"
+              placeholder="Ticker"
+              value={ticker}
+              onChange={(e) => setTicker(e.target.value.toUpperCase())}
+            />
 
-        {/* STRATEGY RESULTS */}
-        {strategies.map((s, i) => {
-          const highlight = s.is_recommended;
+            <input
+              type="number"
+              placeholder="Dollars"
+              value={dollars}
+              onChange={(e) => setDollars(e.target.value)}
+            />
 
-          return (
-            <div
-              key={i}
+            <select value={type} onChange={(e) => setType(e.target.value)}>
+              <option value="simple">Simple</option>
+              <option value="retest">Retest</option>
+              <option value="swing">Swing</option>
+              <option value="all">All</option>
+            </select>
+
+            <button
+              onClick={() => fetchStrategy()}
+              disabled={loading}
               style={{
-                padding: "1.25rem",
-                borderRadius: "12px",
-                border: highlight ? "2px solid #2563eb" : "1px solid #e5e7eb",
-                background: highlight ? "#eff6ff" : "#ffffff",
-                marginBottom: "1.25rem",
-                position: "relative",
+                gridColumn: "span 3",
+                padding: "0.75rem",
+                background: "#111827",
+                color: "white",
+                borderRadius: "8px",
+                fontWeight: 600,
               }}
             >
-              {highlight && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "-10px",
-                    right: "-10px",
-                    background: "#2563eb",
-                    color: "white",
-                    padding: "4px 10px",
-                    borderRadius: "8px",
-                    fontSize: "0.8rem",
-                    fontWeight: 600,
-                  }}
-                >
-                  Recommended
-                </div>
-              )}
+              {loading ? "Loading..." : "Get Strategy"}
+            </button>
+          </div>
 
-              <h2 style={{ marginBottom: "0.75rem" }}>
-                {s.strategy.toUpperCase()}
-              </h2>
-
-              <p>
-                <strong>Entry:</strong> {s.entry}
-              </p>
-              <p>
-                <strong>Stop Loss:</strong> {s.stop_loss}
-              </p>
-              <p>
-                <strong>Take Profit:</strong> {s.take_profit}
-              </p>
-              <p>
-                <strong>Shares:</strong> {s.shares}
-              </p>
-              <p>
-                <strong>Total Risk:</strong> ${s.total_risk}
-              </p>
-              <p>
-                <strong>Total Profit:</strong> ${s.total_profit}
-              </p>
-
-              <p style={{ marginTop: "0.5rem" }}>
-                <strong>Score:</strong> {s.score.toFixed(2)}
-              </p>
-
-              <p style={{ marginTop: "0.75rem", color: "#4b5563" }}>
-                {s.notes}
-              </p>
+          {error && (
+            <div
+              style={{
+                marginBottom: "1rem",
+                padding: "1rem",
+                background: "#fee2e2",
+                color: "#b91c1c",
+                borderRadius: "8px",
+              }}
+            >
+              {error}
             </div>
-          );
-        })}
+          )}
+
+          {/* STRATEGY RESULTS */}
+          {strategies.map((s, i) => {
+            const highlight = s.is_recommended;
+
+            return (
+              <div
+                key={i}
+                style={{
+                  padding: "1.25rem",
+                  borderRadius: "12px",
+                  border: highlight ? "2px solid #2563eb" : "1px solid #e5e7eb",
+                  background: highlight ? "#eff6ff" : "#ffffff",
+                  marginBottom: "1.25rem",
+                  position: "relative",
+                }}
+              >
+                {highlight && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "-10px",
+                      right: "-10px",
+                      background: "#2563eb",
+                      color: "white",
+                      padding: "4px 10px",
+                      borderRadius: "8px",
+                      fontSize: "0.8rem",
+                      fontWeight: 600,
+                    }}
+                  >
+                    Recommended
+                  </div>
+                )}
+
+                <h2 style={{ marginBottom: "0.75rem" }}>
+                  {s.strategy.toUpperCase()}
+                </h2>
+
+                <p>
+                  <strong>Entry:</strong> {s.entry}
+                </p>
+                <p>
+                  <strong>Stop Loss:</strong> {s.stop_loss}
+                </p>
+                <p>
+                  <strong>Take Profit:</strong> {s.take_profit}
+                </p>
+                <p>
+                  <strong>Shares:</strong> {s.shares}
+                </p>
+                <p>
+                  <strong>Total Risk:</strong> ${s.total_risk}
+                </p>
+                <p>
+                  <strong>Total Profit:</strong> ${s.total_profit}
+                </p>
+
+                <p style={{ marginTop: "0.5rem" }}>
+                  <strong>Score:</strong> {s.score.toFixed(2)}
+                </p>
+
+                <p style={{ marginTop: "0.75rem", color: "#4b5563" }}>
+                  {s.notes}
+                </p>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
