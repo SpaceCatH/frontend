@@ -9,6 +9,8 @@ interface Strategy {
   shares: number;
   total_risk: number;
   notes: string;
+  score: number; // NEW
+  is_recommended: boolean; // NEW
 }
 
 export default function App() {
@@ -254,47 +256,77 @@ export default function App() {
 
       {/* RESULTS */}
       <section className="results" style={{ marginBottom: "3rem" }}>
-        {strategies.map((s, i) => (
-          <div
-            key={i}
-            className="card"
-            style={{
-              padding: "1.25rem",
-              borderRadius: "12px",
-              border: "1px solid #e5e7eb",
-              background: "#ffffff",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
-              marginBottom: "1.25rem",
-            }}
-          >
-            <h2 style={{ marginBottom: "0.75rem" }}>
-              {s.strategy.toUpperCase()}
-            </h2>
+        {strategies.map((s, i) => {
+          const highlight = s.is_recommended;
 
-            <p>
-              <strong>Entry:</strong> {s.entry}
-            </p>
-            <p>
-              <strong>Stop Loss:</strong> {s.stop_loss}
-            </p>
-            <p>
-              <strong>Take Profit:</strong> {s.take_profit}
-            </p>
-            <p>
-              <strong>Shares:</strong> {s.shares}
-            </p>
-            <p>
-              <strong>Total Risk:</strong> ${s.total_risk}
-            </p>
-
-            <p
-              className="notes"
-              style={{ marginTop: "0.75rem", color: "#4b5563" }}
+          return (
+            <div
+              key={i}
+              className="card"
+              style={{
+                padding: "1.25rem",
+                borderRadius: "12px",
+                border: highlight ? "2px solid #2563eb" : "1px solid #e5e7eb",
+                background: highlight ? "#eff6ff" : "#ffffff",
+                boxShadow: highlight
+                  ? "0 0 0 3px rgba(37, 99, 235, 0.15)"
+                  : "0 2px 6px rgba(0,0,0,0.04)",
+                marginBottom: "1.25rem",
+                position: "relative",
+              }}
             >
-              {s.notes}
-            </p>
-          </div>
-        ))}
+              {highlight && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "-10px",
+                    right: "-10px",
+                    background: "#2563eb",
+                    color: "white",
+                    padding: "4px 10px",
+                    borderRadius: "8px",
+                    fontSize: "0.8rem",
+                    fontWeight: 600,
+                  }}
+                >
+                  Recommended
+                </div>
+              )}
+
+              <h2 style={{ marginBottom: "0.75rem" }}>
+                {s.strategy.toUpperCase()}
+              </h2>
+
+              <p>
+                <strong>Entry:</strong> {s.entry}
+              </p>
+              <p>
+                <strong>Stop Loss:</strong> {s.stop_loss}
+              </p>
+              <p>
+                <strong>Take Profit:</strong> {s.take_profit}
+              </p>
+              <p>
+                <strong>Shares:</strong> {s.shares}
+              </p>
+              <p>
+                <strong>Total Risk:</strong> ${s.total_risk}
+              </p>
+
+              {/* Score */}
+              <p style={{ marginTop: "0.5rem", color: "#374151" }}>
+                <strong>Score:</strong> {s.score.toFixed(2)}
+              </p>
+
+              <p
+                className="notes"
+                style={{ marginTop: "0.75rem", color: "#4b5563" }}
+              >
+                {s.notes}
+              </p>
+            </div>
+          );
+        })}
       </section>
     </div>
   );
