@@ -33,7 +33,21 @@ export default function App() {
       const url = `${API_BASE}/strategy?ticker=${ticker}&dollars=${dollars}&type=${type}`;
       const res = await fetch(url);
 
-      if (!res.ok) throw new Error("Server error");
+      // NEW: handle 404 gracefully
+      if (!res.ok) {
+        let errorMessage = "Unexpected server error. Please try again.";
+
+        try {
+          const errData = await res.json();
+          if (res.status === 404 && errData?.detail) {
+            errorMessage = errData.detail; // backend's friendly message
+          }
+        } catch {
+          // ignore JSON parse errors
+        }
+
+        throw new Error(errorMessage);
+      }
 
       const data = await res.json();
       if (!data.strategies) throw new Error("No strategies returned");
