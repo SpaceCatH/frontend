@@ -33,7 +33,7 @@ export default function App() {
   const [scanResults, setScanResults] = useState<ScanCandidate[]>([]);
   const [error, setError] = useState<string>("");
 
-  const API_BASE = "https://backend-950106760076.us-central1.run.app";
+  const API_BASE = "https://backend-957970620388.us-central1.run.app";
 
   // -----------------------------
   // Fetch single‑ticker strategy
